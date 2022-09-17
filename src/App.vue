@@ -1,6 +1,6 @@
 <template>
-	<img alt="Vue logo" src="./assets/logo.png">
-	<HelloWorld msg="EK-정산기"/>
+	<!-- <img alt="Vue logo" src="@/assets/logo.png"> -->
+	<HelloWorld msg="EK-더치페이 정산기2"/>
 </template>
 
 <script>

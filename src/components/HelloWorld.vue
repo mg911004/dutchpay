@@ -1,7 +1,8 @@
 <template>
     <div class="hello">
         <h1>{{ msg }}</h1>
-        <div @click="push()">인원추가 test1</div>
+        <input type="text" placeholder="인원 수 입력" v-model="all"/>
+		<input class="input is-success" type="text" placeholder="Success input"/>
     </div>
 </template>
 
@@ -11,9 +12,14 @@ export default {
 	props: {
 		msg: String
 	},
+	data(){
+		return {
+			all : 0
+		}
+	},
 	methods :{
 		push(){
-			alert("추가했습니다.")
+			alert(this.all)
 		}
 	}
 }
