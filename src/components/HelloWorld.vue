@@ -1,7 +1,7 @@
 <template>
     <div class="hello">
         <h1>{{ msg }}</h1>
-        <div @click="push()">인원추가 test</div>
+        <div @click="push()">인원추가 test1</div>
     </div>
 </template>
 
