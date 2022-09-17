@@ -1,0 +1,138 @@
+<template>
+	<div class="q-pa-md">
+		<div class="q-gutter-md" style="max-width: 300px">
+			<q-select outlined v-model="mainInfo.peopleNum" :options="peopleNumOptions" label="인원수"/>
+			<q-input outlined v-model="mainInfo.food" label="총 음식값(술값,음료수값 제외)"/>
+
+			<q-input outlined v-model="mainInfo.alcohol" label="총 술값"/>
+			<q-input outlined v-model="mainInfo.juice" label="총 음료수값"/>
+
+			<q-btn color="primary" label="확인" @click="submit()"/>
+			<q-btn color="red" label="리셋" @click="reset()"/>
+		</div>
+
+		<div class="q-mt-md" v-if="isSubmit">
+			<span class="text-weight-bolder">총 금액 : {{total}}원</span>
+		</div>
+
+		<div v-show="isSubmit" class="q-mt-md q-gutter-md" style="max-width: 300px" v-for="(item,i) in peopleInfo" :key="i">		
+			<q-input filled v-model="peopleInfo[i].name" :label="'인원'+(i+1)+' 이름'"/>
+			<q-checkbox dense v-model="peopleInfo[i].alcohol" label="소주" color="teal" />
+			<q-checkbox dense v-model="peopleInfo[i].juice" label="음료수" color="orange" />	
+		</div>
+
+		<div class="q-mt-md" v-if="isSubmit">
+			<q-btn color="primary" label="계산하기" @click="calculate()"/>
+		</div>
+
+		<q-markup-table v-if="isCalculate" class="q-mt-lg" style="max-width: 300px">
+			<thead>
+				<tr>
+					<th class="text-left"><span class="text-weight-bolder">이름</span></th>
+					<th class="text-right"><span class="text-weight-bolder">정산금액</span></th>
+				</tr>
+			</thead>
+			<tbody v-for="(item,i) in peopleInfo" :key="i">
+				<tr>
+					<td class="text-left">{{item.name}}</td>
+					<td class="text-right">{{item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}}원</td>
+				</tr>
+			</tbody>
+		</q-markup-table>
+
+		<q-markup-table v-if="isCalculate" class="q-mt-sm" style="max-width: 300px">
+			<thead>
+				<tr>
+					<th class="text-left"><span class="text-weight-bolder"></span></th>
+					<th class="text-right"><span class="text-weight-bolder">
+						정산금액 합계 : 
+						{{totalCalprice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}}원</span>
+					</th>
+				</tr>
+			</thead>
+		</q-markup-table>
+
+		<!-- <div class="q-mt-md text-weight-bolder">
+			정산금액 합계 : {{totalCalprice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}} 원
+		</div> -->
+	</div>
+</template>
+
+<style>
+</style>
+
+<script>
+export default {
+	name: 'Main',
+	data(){
+		return{
+			mainInfo:{
+				peopleNum:"",
+				food:"",
+				alcohol:"",
+				juice:"",
+			},
+			peopleInfo:[], //name,alcohol,juice,price
+			peopleNumOptions:[2,3,4,5,6,7,8,9,10],
+			isSubmit : false,
+			isCalculate : false,
+
+			totalCalprice:0
+			
+		}
+	},
+	computed:{
+		total(){
+			let totalprice = (this.mainInfo.food*1) + (this.mainInfo.alcohol*1) + (this.mainInfo.juice*1);
+			return totalprice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+		}
+	},
+	methods:{
+		submit(){
+			if(this.isSubmit){return;}
+			if(!this.mainInfo.peopleNum){alert("인원수를 입력해줘");return;}
+			else if(!this.mainInfo.food){alert("음식값을 입력해줘");return;}
+
+			for(let i=0; i<this.mainInfo.peopleNum; i++){
+				this.peopleInfo.push({name:"",alcohol:false,juice:false,price:0})
+			}
+			this.isSubmit=true;
+		},
+		reset(){
+			this.peopleInfo=[];
+			this.isSubmit=false;
+			this.isCalculate=false;
+			this.mainInfo={};
+		},
+		calculate(){
+			let alcoholCnt = 0;
+			let juiceCnt = 0;
+
+			/** 전체 인원 중 술마신 인원 / 음료수 마신 인원 계산 */
+			for(let i=0; i<this.peopleInfo.length; i++){
+				if(this.peopleInfo[i].alcohol){alcoholCnt++;} 
+				if(this.peopleInfo[i].juice){juiceCnt++;} 
+			}		
+
+			/** 전체인원의 최종 정산 할 금액 계산 */
+			for(let i=0; i<this.peopleInfo.length; i++){
+				let foodPrice = this.mainInfo.food*1 / this.peopleInfo.length;
+				let alcoholPrice = 0;
+				let jucePrice = 0;		
+
+				if(this.peopleInfo[i].alcohol==true){
+					alcoholPrice = this.mainInfo.alcohol*1 / alcoholCnt;
+				}
+
+				if(this.peopleInfo[i].juice==true){
+					jucePrice = this.mainInfo.juice*1 / juiceCnt;
+				}
+
+				this.peopleInfo[i].price = Math.round(foodPrice+alcoholPrice+jucePrice);
+				this.totalCalprice+=this.peopleInfo[i].price;
+			}	
+			this.isCalculate = true;
+		}
+	}
+}
+</script>
