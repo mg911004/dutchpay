@@ -25,36 +25,38 @@
 			<q-btn color="primary" label="계산하기" @click="calculate()"/>
 		</div>
 
-		<q-markup-table v-if="isCalculate" class="q-mt-lg" style="max-width: 300px">
-			<thead>
-				<tr>
-					<th class="text-left"><span class="text-weight-bolder">이름</span></th>
-					<th class="text-right"><span class="text-weight-bolder">정산금액</span></th>
-				</tr>
-			</thead>
-			<tbody v-for="(item,i) in peopleInfo" :key="i">
-				<tr>
-					<td class="text-left">{{item.name}}</td>
-					<td class="text-right">{{item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}}원</td>
-				</tr>
-			</tbody>
-		</q-markup-table>
+		<div id="capture">
+			<q-markup-table v-if="isCalculate" class="q-mt-lg" style="max-width: 300px">
+				<thead>
+					<tr>
+						<th class="text-left"><span class="text-weight-bolder">이름</span></th>
+						<th class="text-right"><span class="text-weight-bolder">정산금액</span></th>
+					</tr>
+				</thead>
+				<tbody v-for="(item,i) in peopleInfo" :key="i">
+					<tr>
+						<td class="text-left">{{item.name}}</td>
+						<td class="text-right">{{item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}}원</td>
+					</tr>
+				</tbody>
+			</q-markup-table>
 
-		<q-markup-table v-if="isCalculate" class="q-mt-sm" style="max-width: 300px">
-			<thead>
-				<tr>
-					<th class="text-left"><span class="text-weight-bolder"></span></th>
-					<th class="text-right"><span class="text-weight-bolder">
-						정산금액 합계 : 
-						{{totalCalprice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}}원</span>
-					</th>
-				</tr>
-			</thead>
-		</q-markup-table>
+			<q-markup-table v-if="isCalculate" class="q-mt-sm" style="max-width: 300px">
+				<thead>
+					<tr>
+						<th class="text-left"><span class="text-weight-bolder"></span></th>
+						<th class="text-right"><span class="text-weight-bolder">
+							정산금액 합계 : 
+							{{totalCalprice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}}원</span>
+						</th>
+					</tr>
+				</thead>
+			</q-markup-table>
+		</div>
 
-		<!-- <div class="q-mt-md text-weight-bolder">
-			정산금액 합계 : {{totalCalprice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}} 원
-		</div> -->
+		<div class="q-mt-md" v-if="isCalculate">
+			<q-btn color="primary" label="캡쳐하기" @click="partShot()"/>
+		</div>
 	</div>
 </template>
 
@@ -62,6 +64,7 @@
 </style>
 
 <script>
+import html2canvas from 'html2canvas';
 export default {
 	name: 'Main',
 	data(){
@@ -132,7 +135,13 @@ export default {
 				this.totalCalprice+=this.peopleInfo[i].price;
 			}	
 			this.isCalculate = true;
-		}
+		},
+		/** 영역 캡쳐,클립보드 복사 */
+		partShot(){
+			html2canvas(document.querySelector("#capture")).then(canvas => {
+				canvas.toBlob(blob => navigator.clipboard.write([new window.ClipboardItem({ [blob.type]: blob })]))
+			});
+		},
 	}
 }
 </script>
