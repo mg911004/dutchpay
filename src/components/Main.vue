@@ -80,7 +80,7 @@ export default {
 			isSubmit : false,
 			isCalculate : false,
 
-			totalCalprice:0
+			totalCalprice:0,
 			
 		}
 	},
