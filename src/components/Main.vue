@@ -17,7 +17,7 @@
 
 		<div v-show="isSubmit" class="q-mt-md q-gutter-md" style="max-width: 300px" v-for="(item,i) in peopleInfo" :key="i">		
 			<q-input filled v-model="peopleInfo[i].name" :label="'인원'+(i+1)+' 이름'"/>
-			<q-checkbox dense v-model="peopleInfo[i].alcohol" label="소주" color="teal" />
+			<q-checkbox dense v-model="peopleInfo[i].alcohol" label="술" color="teal" />
 			<q-checkbox dense v-model="peopleInfo[i].juice" label="음료수" color="orange" />	
 		</div>
 
@@ -26,6 +26,11 @@
 		</div>
 
 		<div id="capture">
+
+			<div class="q-mt-md" v-if="isSubmit">
+				총 계산 금액 : {{total}}원
+			</div>
+
 			<q-markup-table v-if="isCalculate" class="q-mt-lg" style="max-width: 300px">
 				<thead>
 					<tr>
@@ -35,7 +40,9 @@
 				</thead>
 				<tbody v-for="(item,i) in peopleInfo" :key="i">
 					<tr>
-						<td class="text-left">{{item.name}}</td>
+						<td class="text-left">{{item.name}} 
+							<span v-if="item.alcohol" style="color:red;font-size:12px">술o</span> <span v-if="item.juice" style="color:red;font-size:12px">음료수o</span>
+						</td>
 						<td class="text-right">{{item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}}원</td>
 					</tr>
 				</tbody>
