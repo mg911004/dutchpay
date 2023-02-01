@@ -2,18 +2,18 @@
 	<div class="q-pa-md">
 		<div class="q-gutter-md" style="max-width: 300px">
 			<q-select outlined v-model="mainInfo.peopleNum" :options="peopleNumOptions" label="인원수"/>
-			<q-input outlined v-model="mainInfo.food" label="총 음식값(술값,음료수값 제외)"/>
+			<q-input outlined v-model="mainInfo.price" label="전체금액"/>
 
-			<q-input outlined v-model="mainInfo.alcohol" label="총 술값"/>
-			<q-input outlined v-model="mainInfo.juice" label="총 음료수값"/>
+			<q-input outlined v-model="mainInfo.alcohol" label="주류합계금액"/>
+			<q-input outlined v-model="mainInfo.juice" label="음료수합계금액"/>
 
 			<q-btn color="primary" label="확인" @click="submit()"/>
 			<q-btn color="red" label="리셋" @click="reset()"/>
 		</div>
 
-		<div class="q-mt-md" v-if="isSubmit">
+		<!-- <div class="q-mt-md" v-if="isSubmit">
 			<span class="text-weight-bolder">총 금액 : {{total}}원</span>
-		</div>
+		</div> -->
 
 		<div v-show="isSubmit" class="q-mt-md q-gutter-md" style="max-width: 300px" v-for="(item,i) in peopleInfo" :key="i">		
 			<q-input filled v-model="peopleInfo[i].name" :label="'인원'+(i+1)+' 이름'"/>
@@ -27,9 +27,9 @@
 
 		<div id="capture">
 
-			<div class="q-mt-md" v-if="isSubmit">
+			<!-- <div class="q-mt-md" v-if="isSubmit">
 				총 계산 금액 : {{total}}원
-			</div>
+			</div> -->
 
 			<q-markup-table v-if="isCalculate" class="q-mt-lg" style="max-width: 300px">
 				<thead>
@@ -78,6 +78,7 @@ export default {
 		return{
 			mainInfo:{
 				peopleNum:"",
+				price:"",
 				food:"",
 				alcohol:"",
 				juice:"",
@@ -95,13 +96,13 @@ export default {
 		total(){
 			let totalprice = (this.mainInfo.food*1) + (this.mainInfo.alcohol*1) + (this.mainInfo.juice*1);
 			return totalprice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-		}
+		},
 	},
 	methods:{
 		submit(){
 			if(this.isSubmit){return;}
 			if(!this.mainInfo.peopleNum){alert("인원수를 입력해줘");return;}
-			else if(!this.mainInfo.food){alert("음식값을 입력해줘");return;}
+			else if(!this.mainInfo.price){alert("음식값을 입력해줘");return;}
 
 			for(let i=0; i<this.mainInfo.peopleNum; i++){
 				this.peopleInfo.push({name:"",alcohol:false,juice:false,price:0})
@@ -113,8 +114,10 @@ export default {
 			this.isSubmit=false;
 			this.isCalculate=false;
 			this.mainInfo={};
+			this.totalCalprice = 0;
 		},
 		calculate(){
+			this.totalCalprice = 0;
 			let alcoholCnt = 0;
 			let juiceCnt = 0;
 
@@ -126,7 +129,7 @@ export default {
 
 			/** 전체인원의 최종 정산 할 금액 계산 */
 			for(let i=0; i<this.peopleInfo.length; i++){
-				let foodPrice = this.mainInfo.food*1 / this.peopleInfo.length;
+				let foodPrice = this.mainInfo.price*1-(this.mainInfo.alcohol*1+this.mainInfo.juice*1)
 				let alcoholPrice = 0;
 				let jucePrice = 0;		
 
@@ -138,7 +141,7 @@ export default {
 					jucePrice = this.mainInfo.juice*1 / juiceCnt;
 				}
 
-				this.peopleInfo[i].price = Math.round(foodPrice+alcoholPrice+jucePrice);
+				this.peopleInfo[i].price = Math.round((foodPrice/this.peopleInfo.length)+alcoholPrice+jucePrice);
 				this.totalCalprice+=this.peopleInfo[i].price;
 			}	
 			this.isCalculate = true;
