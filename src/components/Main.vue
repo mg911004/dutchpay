@@ -54,7 +54,7 @@
 						<th class="text-left"><span class="text-weight-bolder"></span></th>
 						<th class="text-right"><span class="text-weight-bolder">
 							정산금액 합계 : 
-							{{totalCalprice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}}원</span>
+							{{this.mainInfo.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}}원</span>
 						</th>
 					</tr>
 				</thead>
@@ -100,14 +100,18 @@ export default {
 	},
 	methods:{
 		submit(){
-			if(this.isSubmit){return;}
-			if(!this.mainInfo.peopleNum){alert("인원수를 입력해줘");return;}
-			else if(!this.mainInfo.price){alert("음식값을 입력해줘");return;}
+			if(!this.checkValue())return;
 
 			for(let i=0; i<this.mainInfo.peopleNum; i++){
 				this.peopleInfo.push({name:"",alcohol:false,juice:false,price:0})
 			}
 			this.isSubmit=true;
+		},
+		checkValue(){
+			if(this.isSubmit){return;}
+			if(!this.mainInfo.peopleNum){alert("인원수를 입력해줘");return;}
+			else if(!this.mainInfo.price){alert("전체금액을 입력해줘");return;}
+			return true;
 		},
 		reset(){
 			this.peopleInfo=[];
